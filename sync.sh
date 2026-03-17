@@ -39,32 +39,55 @@ sync_project() {
         return
     fi
 
-    local TARGET="$PROJECT_PATH/.claude/standards"
+    # .claude/rules/ → Claude Code tarafindan OTOMATIK yuklenir
+    local RULES_TARGET="$PROJECT_PATH/.claude/rules"
 
-    # Onceki standards'i temizle ve yeniden olustur
-    rm -rf "$TARGET"
-    mkdir -p "$TARGET"
+    # Onceki standart dosyalarini temizle (standards- prefix ile ayirt et)
+    mkdir -p "$RULES_TARGET"
+    rm -f "$RULES_TARGET"/standards-*.md
 
-    # Global kurallari kopyala
-    mkdir -p "$TARGET/global"
-    cp "$STANDARDS_DIR/global/CLAUDE.md" "$TARGET/global/CLAUDE.md"
+    # Global kurallari kopyala (her dosyayi standards- prefix ile)
     if [ -d "$STANDARDS_DIR/global/rules" ]; then
-        cp -r "$STANDARDS_DIR/global/rules/" "$TARGET/global/rules/"
+        for file in "$STANDARDS_DIR/global/rules/"*.md; do
+            [ -f "$file" ] || continue
+            local basename=$(basename "$file")
+            cp "$file" "$RULES_TARGET/standards-global-$basename"
+        done
     fi
+    # Global CLAUDE.md'yi de rule olarak kopyala
+    cp "$STANDARDS_DIR/global/CLAUDE.md" "$RULES_TARGET/standards-global.md"
 
     # Teknoloji-bazli kurallari kopyala
     IFS=' ' read -ra TECH_ARRAY <<< "$techs"
     for tech in "${TECH_ARRAY[@]}"; do
         if [ -d "$STANDARDS_DIR/$tech" ]; then
-            mkdir -p "$TARGET/$tech"
-            cp "$STANDARDS_DIR/$tech/CLAUDE.md" "$TARGET/$tech/CLAUDE.md" 2>/dev/null || true
+            # Ana CLAUDE.md
+            if [ -f "$STANDARDS_DIR/$tech/CLAUDE.md" ]; then
+                cp "$STANDARDS_DIR/$tech/CLAUDE.md" "$RULES_TARGET/standards-$tech.md"
+            fi
+            # rules/ altindaki dosyalar
             if [ -d "$STANDARDS_DIR/$tech/rules" ]; then
-                cp -r "$STANDARDS_DIR/$tech/rules/" "$TARGET/$tech/rules/"
+                for file in "$STANDARDS_DIR/$tech/rules/"*.md; do
+                    [ -f "$file" ] || continue
+                    local basename=$(basename "$file")
+                    cp "$file" "$RULES_TARGET/standards-$tech-$basename"
+                done
+                # editorconfig gibi md olmayan dosyalar
+                for file in "$STANDARDS_DIR/$tech/rules/"*; do
+                    [ -f "$file" ] || continue
+                    [[ "$file" == *.md ]] && continue
+                    local basename=$(basename "$file")
+                    cp "$file" "$RULES_TARGET/standards-$tech-$basename"
+                done
             fi
         fi
     done
 
-    echo -e "${GREEN}✅ $project${NC} synced (${BLUE}$techs${NC})"
+    # Eski .claude/standards/ dizinini temizle (artik kullanilmiyor)
+    rm -rf "$PROJECT_PATH/.claude/standards"
+
+    local file_count=$(ls -1 "$RULES_TARGET"/standards-* 2>/dev/null | wc -l)
+    echo -e "${GREEN}✅ $project${NC} synced → .claude/rules/ (${BLUE}$file_count dosya${NC}, techs: $techs)"
 }
 
 show_status() {
@@ -74,14 +97,14 @@ show_status() {
 
     for project in "${!PROJECT_TECHS[@]}"; do
         local PROJECT_PATH="$PROJECTS_DIR/$project"
-        local TARGET="$PROJECT_PATH/.claude/standards"
+        local RULES_TARGET="$PROJECT_PATH/.claude/rules"
 
         if [ ! -d "$PROJECT_PATH" ]; then
             echo -e "  ${YELLOW}⚠️  $project${NC} - Proje dizini yok"
-        elif [ ! -d "$TARGET" ]; then
+        elif ! ls "$RULES_TARGET"/standards-* &>/dev/null; then
             echo -e "  ❌ $project - Standards yok (sync gerekli)"
         else
-            local file_count=$(find "$TARGET" -type f | wc -l)
+            local file_count=$(ls -1 "$RULES_TARGET"/standards-* 2>/dev/null | wc -l)
             echo -e "  ${GREEN}✅ $project${NC} - $file_count dosya (${PROJECT_TECHS[$project]})"
         fi
     done
