@@ -91,5 +91,6 @@ Kullanicinin ilk talimatini bekle. Istenmedikce ekstra aciklama yapma.
 
 - `rules/session-protocol.md` - Session protokolu detaylari
 - `rules/git-workflow.md` - Git ve commit kurallari
+- `rules/changelog.md` - Changelog yazim kurallari (Keep a Changelog + SemVer)
 - `rules/documentation.md` - Dokumantasyon gereksinimleri
 - `rules/security-generic.md` - Genel guvenlik kurallari
