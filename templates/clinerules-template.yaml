@@ -1,0 +1,73 @@
+# {SERVICE_NAME} - Service-Specific Rules Template
+# Placeholder'lari projeye gore degistirin.
+
+# Session initialization
+session_init:
+  auto_read:
+    - "../../.claude/memory/MEMORY.md"
+    - "./.claude/memory/MEMORY.md"
+
+# Service identity
+service_context:
+  name: "{SERVICE_NAME}"
+  type: "microservice"
+  module_type: "{MODULE_TYPE}"  # core / optional
+  database: "{DB_NAME}"
+  port: {PORT}
+
+# Service responsibilities
+responsibilities:
+  primary:
+    - "{RESPONSIBILITY_1}"
+    - "{RESPONSIBILITY_2}"
+  not_responsible_for:
+    - "Cross-service changes"
+    - "Infrastructure updates"
+
+# Architecture
+architecture:
+  pattern: "clean_architecture"
+  layers:
+    domain:
+      path: "{SERVICE_NAME}.Domain"
+      dependencies: []
+    application:
+      path: "{SERVICE_NAME}.Application"
+      dependencies: ["Domain"]
+    infrastructure:
+      path: "{SERVICE_NAME}.Infrastructure"
+      dependencies: ["Application", "Domain"]
+    api:
+      path: "{SERVICE_NAME}.API"
+      dependencies: ["Application", "Infrastructure"]
+
+# API endpoints
+api_endpoints:
+  - "{HTTP_METHOD} /api/v1/{resource}"
+  - "{HTTP_METHOD} /api/v1/{resource}/{id}"
+
+# Database tables
+database_tables:
+  - "{TABLE_1}"
+  - "{TABLE_2}"
+
+# Domain events
+domain_events:
+  published:
+    - name: "{Entity}{Action}Event"
+      payload: ["{Field1}", "{Field2}"]
+      consumers: ["{ConsumerService}"]
+  subscribed: []
+
+# Testing
+testing:
+  unit_tests:
+    path: "{SERVICE_NAME}.UnitTests"
+    framework: "xUnit"
+    mocking: "Moq"
+    assertions: "FluentAssertions"
+  integration_tests:
+    path: "{SERVICE_NAME}.IntegrationTests"
+    framework: "xUnit"
+    containers: "Testcontainers"
+  coverage_target: 80
