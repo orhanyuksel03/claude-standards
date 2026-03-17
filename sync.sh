@@ -18,6 +18,8 @@ PROJECTS_DIR="D:/projects"
 # Yeni proje eklemek icin buraya bir satir ekleyin
 declare -A PROJECT_TECHS=(
     ["qrphoto-microservices"]="dotnet microservices"
+    ["qrphoto-microservices/services/auth-service"]="dotnet microservices"
+    ["qrphoto-microservices/services/license-service"]="dotnet microservices"
     ["confighub"]="dotnet"
     ["qrphoto-frontend"]="react"
     ["confighub-admin"]="react"
