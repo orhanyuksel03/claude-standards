@@ -100,6 +100,57 @@ Kullanici "Evet" derse guncelle, "Hayir" derse sadece kodu teslim et.
 - [ ] Cok uzun degerler gonder
 ```
 
+## Jira Task Tamamlama Yorumu
+
+Task tamamlandiginda Jira'ya yorum ekle. Format:
+
+- **Basliklar:** h3 heading + emoji
+- **Teknik terimler:** Bold (class adlari, property adlari, tool adlari)
+- **Alt maddeler:** Bullet list
+- **Alt bilgi:** Test durumu, breaking change notu, commit hash
+
+### Template
+
+```
+### 📦 {ProjeAdi} v{X.Y.Z} (Yeni/Guncelleme)
+- Yapilan is aciklamasi (**teknik terimler** bold)
+- Diger detaylar
+
+### 🔄 {ServisAdi} v{eski} → v{yeni}
+- Degisiklik aciklamasi
+- **Onemli** teknik detaylar bold
+
+### ⚙️ Altyapi
+- Altyapi degisiklikleri
+
+✅ **Test:** Test durumu aciklamasi
+⚠️ **Breaking Change:** Var/Yok — aciklama
+🔗 **Commit:** {hash}
+```
+
+### Kurallar
+
+1. Her etkilenen proje/servis icin ayri baslik ac
+2. Versiyon gecisi goster: `v0.2.0 → v0.2.1`
+3. Teknik terimleri bold yap (class, property, tool adlari)
+4. Test ve breaking change bilgisi her zaman ekle
+5. Commit hash referansi ekle
+
+### Emoji Rehberi
+
+| Emoji | Kullanim |
+|-------|----------|
+| 📦 | Yeni proje/paket/kutuphane |
+| 🔄 | Servis guncelleme/migration |
+| ⚙️ | Altyapi/konfigurasyondegisikligi |
+| ✅ | Test durumu |
+| ⚠️ | Breaking change / uyari |
+| 🔗 | Referans link/commit |
+| 🐛 | Bug fix |
+| 🚀 | Yeni ozellik / deploy |
+
+---
+
 ## Frontend UI Test Template
 
 ```markdown
